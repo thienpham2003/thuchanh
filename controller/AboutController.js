@@ -1,9 +1,11 @@
 
 
-const AboutController = (req, res) => {
-    return res.render("about", {
-        header: "header.ejs",
-        footer: "footer.ejs",
+const AboutPage = (req, res) => {
+    return res.render("home",{
+        data:{
+            title: "about",
+            page: "about",
+        }
     });
 }
-export {AboutController}
+export {AboutPage}

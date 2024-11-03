@@ -1,7 +1,9 @@
-const ContactController = (req, res) => {
-    return res.render("contact", {
-        header: "header.ejs",
-        footer: "footer.ejs",
+const ContactPage = (req, res) => {
+    return res.render("home",{
+        data:{
+            title: "contact",
+            page: "contact",
+        }
     });
-};
-export { ContactController }
+}
+export {ContactPage}
