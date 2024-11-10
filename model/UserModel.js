@@ -16,6 +16,21 @@ const findByUsername = async (username) => {
 const getAllUsers = async () => {
   const [rows, fields] = await pool.execute('SELECT * FROM user')
   return rows
-} 
+}
+let getUsername = async (username) => {
+    let [rows, fields] = await pool.query(
+        "SELECT * FROM user WHERE username = ?",
+        [username]
+    );
+    return rows.length > 0 ? rows[0] : null;
+}; 
 
-export default {getAllUsers , findByUsername , createUser};
+let deleteUserById = async (id) => {
+    return await pool.query("DELETE FROM user WHERE id = ?", [id]);
+};
+let updateUser = async (id, username, password, fullname, address, sex, email) => {
+  
+    return await pool.query("UPDATE user SET username = ?, password = ?, fullname = ?, address = ?, sex = ?, email = ? WHERE id = ?", [username, password, fullname, address, sex, email, id]);
+};
+
+export default {getAllUsers , findByUsername , createUser, getUsername, deleteUserById, updateUser};

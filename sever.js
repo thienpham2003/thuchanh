@@ -15,15 +15,15 @@ app.use(session({
     store: redisStore,
     secret: 'thienpham',
     resave: false,
-    saveUninitialized: false, 
-    // cookie: { secure: false }
-})) 
+    saveUninitialized: true, 
+    cookie: { secure: false }
+}));
+// app.use(flash());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+
 viewEngine(app);
 initWebRoutes(app);
-
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`); 
 });
-
