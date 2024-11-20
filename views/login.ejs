@@ -70,21 +70,22 @@
         <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
     <p class="text-center mt-3">
-        <a href="/register">Don't have an account? Register</a>
+        <a href="/getregister">Don't have an account? Register</a>
     </p>
     <!-- Hiển thị thông báo -->
-    <% if (successMessage) { %>
-        <div id="success-message" class="mt-3 alert alert-success">
-            <%= successMessage %>
-        </div>
-        <script>
-            setTimeout(function () {
-                document.getElementById("success-message").style.display =
-                    "none";
-            }, 3000);
-        </script>
-        <% } %>
-</div>
+         <!-- <!-- <% if (successMessage) { %> -->
+            <div id="success-message" class="mt-3 alert alert-success">
+                <%= successMessage %>
+            </div>
+            <script>
+                setTimeout(function () {
+                    document.getElementById("success-message").style.display =
+                        "none";
+                }, 3000);
+            </script>
+            <% } %>
+    </div> -->
+
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0/js/bootstrap.min.js"></script>

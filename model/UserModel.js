@@ -2,12 +2,12 @@
 import e from 'express';
 import pool from '../config/connectBD.js';
 import connection from '../config/connectBD.js';
-const createUser = async (username, password, fullname, address, sex, email) => {
+const createUser = async (username, password, fullname, address, sex, email, role = 'user') => {
   const [result] = await connection.execute(
-      'INSERT INTO user (username, password, fullname, address, sex, email) VALUES (?, ?, ?, ?, ?, ? )',
-      [username, password, fullname, address, sex, email ]
+      'INSERT INTO user (username, password, fullname, address, sex, email, role) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [username, password, fullname, address, sex, email, role] // Thêm role vào câu lệnh
   );
-  return result.insertId; // Trả về ID của bản ghi mới được chèn
+   // Trả về ID của bản ghi mới được chèn
 };
 const findByUsername = async (username) => {
   const [rows] = await connection.execute('SELECT * FROM user WHERE username = ?', [username]);
@@ -28,9 +28,24 @@ let getUsername = async (username) => {
 let deleteUserById = async (id) => {
     return await pool.query("DELETE FROM user WHERE id = ?", [id]);
 };
-let updateUser = async (id, username, password, fullname, address, sex, email) => {
-  
-    return await pool.query("UPDATE user SET username = ?, password = ?, fullname = ?, address = ?, sex = ?, email = ? WHERE id = ?", [username, password, fullname, address, sex, email, id]);
+const getUserById = async (userId) => {
+  const query = "SELECT * FROM user WHERE id = ?";
+  const [rows] = await pool.execute(query, [userId]);
+  return rows[0]; // Lấy user đầu tiên
 };
 
-export default {getAllUsers , findByUsername , createUser, getUsername, deleteUserById, updateUser};
+
+const updateUserById = async (userId, userData) => {
+  const { username, fullname, address, sex, email } = userData;
+  const query = `
+    UPDATE user
+    SET username = ?, fullname = ?, address = ?, sex = ?, email = ?
+    WHERE id = ?
+  `;
+  await pool.execute(query, [username, fullname, address, sex, email, userId]);
+};
+
+
+
+
+export default {getAllUsers , findByUsername , createUser, getUsername, deleteUserById, updateUserById,getUserById};

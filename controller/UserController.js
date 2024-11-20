@@ -3,7 +3,7 @@ import UserModel from "../model/UserModel.js"
 import bcrypt from 'bcrypt';
 
 // Controller để lấy danh sách người dùng
-const loginuser = async (req, res) => {
+const loginUser = async (req, res) => {
   const { username, password } = req.body;
   // let message = req.query.message || null;  
   const user = await UserModel.findByUsername(username);
@@ -83,18 +83,8 @@ const getAllUsers = async (req, res) => {
 // }
 
 // controllers/userController.js
-const getRegister = (req, res) => {
-  let message = req.query.message || null; 
-  // Kiểm tra nếu người dùng đã đăng nhập, chuyển hướng tới trang khác
-  if (req.session.user) {
-    return res.redirect('/home');
-  }
-
-  // Hiển thị form login với biến message trống (null) nếu không có lỗi
-  return res.render('register', { succesMessage: message });
-};
 const registerUser = async (req, res) => {
-  const { username, password, confirmPassword, fullname, address, sex, email } = req.body;
+  const { username, password, confirmPassword, fullname, address, sex, email, role } = req.body;
 
   // Kiểm tra nếu mật khẩu và xác nhận mật khẩu khớp
   if (password !== confirmPassword) {
@@ -108,16 +98,39 @@ const registerUser = async (req, res) => {
       return res.render('register', { message: 'Tên người dùng đã tồn tại' });
     }
 
-    // Mã hóa mật khẩu và tạo người dùng mới
+    // Mặc định role là 'user', nếu người dùng có quyền admin thì có thể chọn role khác
+    let userRole = 'user';  // Mặc định là 'user'
+    
+    // Kiểm tra nếu người dùng đang đăng ký có quyền admin (dựa trên session)
+    if (req.session.user && req.session.user.role === 'admin') {
+      // Nếu admin có thể chỉ định 'role' là admin từ form
+      userRole = role || 'user'; // Nếu không có giá trị 'role' từ form, mặc định là 'user'
+    }
+
+    // Mã hóa mật khẩu
     const hashedPassword = await bcrypt.hash(password, 10);
-    await UserModel.createUser(username, hashedPassword, fullname, address, sex, email);
-    // return res.redirect('/login');
-    return res.redirect("/getlogin?message=Đăng ký tài khoản thành công.");
-    // Truyền thông báo thành công vào view
+
+    // Tạo người dùng mới với thông tin đăng ký
+    await UserModel.createUser(username, hashedPassword, fullname, address, sex, email, userRole);
+    
+    // Đăng ký thành công, chuyển hướng đến trang đăng nhập
+    return res.redirect("/?message=Đăng ký tài khoản thành công.");
+    
   } catch (error) {
     console.error('Error registering user:', error);
-    res.status(500).render('register', { message: 'Lỗi khi lưu người dùng vào cơ sở dữ liệu' });
+    return res.status(500).render('register', { message: 'Lỗi khi lưu người dùng vào cơ sở dữ liệu' });
   }
+};
+
+const getRegister = (req, res) => {
+  let message = req.query.message || null; 
+  // Kiểm tra nếu người dùng đã đăng nhập, chuyển hướng tới trang khác
+  if (req.session.user) {
+    return res.redirect('/');
+  }
+
+  // Hiển thị form đăng ký với biến message trống (null) nếu không có lỗi
+  return res.render('register', { succesMessage: message });
 };
 
 
@@ -137,7 +150,7 @@ let deleteUserById = async (req, res) => {
   await UserModel.deleteUserById(userId);
   if(req.session.user && req.session.user.username) {
     req.session.destroy();
-    return res.redirect("/getLogin?message=Xóa người dùng thành công.");
+    return res.redirect("/?message=Xóa người dùng thành công.");
   }
 
   // if (req.session.user && req.session.user.role === "admin") {
@@ -151,15 +164,31 @@ let deleteUserById = async (req, res) => {
 let getupdateUser = async (req, res) => {
   let { userId } = req.query;
   let dataUser = await UserModel.getUserById(userId);
+
   return res.render("editUser", {
     user: dataUser,
+    message: "Welcome to the edit user page", // Truyền biến `message`
   });
-}
-let updateUser = async (req, res) => {
-  let { userId, username, password, fullname, address, sex, email } = req.body;
-  await UserModel.updateUser(userId, username, password, fullname, address, sex, email);
-  return res.redirect("/detailUser?message=Cập nhật người dùng thành công.");
+};
+
+const updateUser = async (req, res) => {
+  const userId = req.params.id;
+  const { fullname, address, sex, email } = req.body;
+  try {
+      const result = await userModel.updateUserById(userId, fullname, address, sex, email);
+      if (result.affectedRows > 0) {
+          // Nếu không muốn chuyển hướng, bạn có thể gửi một thông báo
+          res.redirect("/detailUser?message=Cập nhật thành công");
+
+      } else {
+          return res.status(400).send('Failed to update user');
+      }
+  } catch (error) {
+      console.error(error);
+      return res.status(500).send('Server error');
+  }
 };
 
 
-export default { getAllUsers, loginuser, getLogin, logoutUser, createUser, registerUser, getRegister, getDetailUser, deleteUserById,updateUser,getupdateUser };
+
+export default { getAllUsers, loginUser, getLogin, logoutUser, createUser, registerUser, getRegister, getDetailUser, deleteUserById,updateUser,getupdateUser };

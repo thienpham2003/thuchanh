@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Detail</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .product-detail { max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 5px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        .product-image img { width: 100%; height: auto; max-height: 300px; object-fit: cover; }
+        .product-name { font-size: 24px; font-weight: bold; margin: 15px 0; color: #333; }
+        .product-price { font-size: 20px; color: #ff5722; font-weight: bold; }
+        .product-description { margin: 20px 0; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="product-detail">
+        <div class="product-image">
+            <img src="<%= product.image %>" alt="<%= product.name %>">
+        </div>
+        <div class="product-name"><%= product.name %></div>
+        <div class="product-price">Price: $<%= product.price %></div>
+        <div class="product-description"><%= product.description %></div>
+    </div>
+</body>
+</html>

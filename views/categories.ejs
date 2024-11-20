@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Categories</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        h1 { color: #333; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 10px 0; }
+        a { text-decoration: none; color: #007bff; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Product Categories</h1>
+    <ul>
+        <% categories.forEach(category => { %>
+            <li>
+                <a href="/products/category/<%= category.category_id %>">
+                    <%= category.name %>
+                </a>
+            </li>
+        <% }) %>
+    </ul>
+</body>
+</html>
